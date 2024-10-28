@@ -1,0 +1,90 @@
+Arch Linux VM Installation
+Project for CYB 3353-System Administration
+University of Tulsa
+Kenji Tratnik
+Prof. Miller
+
+
+Purpose
+    	The Purpose of this guide is to document the steps necessary to install Arch Linux into a Virtual Machine (VM) into VMworkstation Pro. Starting from the settings necessary in VMworkstation, to the installation of Arch Linux in the VM, to 
+    General Steps
+Installation of VM Workstation Pro and Starting Virtual Machine
+    Start by going to VMware Docs, and scroll to the section titled “About VMware Workstation Pro” and click ‘here’ at the end of the section (here for ease). 
+    After signing into, or creating, a Broadcom account we can download VMware Workstation Pro.
+    Don’t make any changes during the setup wizard and finish the installation of VMworkstation
+    Going to https://archlinux.org/download/, scroll down to the ‘United States’ Tab and select a URL that is closest to you, in this case I chose arizona.edu.
+    Once you choose a link, download the .iso file (Which is typically the first file that can be downloaded)
+     Go back to the VMware window and click ‘Create a new Virtual Machine’ to open ‘New Virtual Machine Wizard’ click ‘Next’
+    Click the ‘Installer disc image file (iso):’ option then ‘Browse’ and select the .iso file you just downloaded and click ‘Next’
+    Click the ‘Linux’ option and then select ‘Other Linux 6.x kernel 64-bit’ in the Version dropdown window, click ‘Next’
+    Name your virtual machine whatever you want, I chose ArchLinux, click ‘Next’
+    Change “Maximum disk size (GB):” to 20, click ‘Next’
+    Click “Customize Hardware…”, change the amount of memory to 2BG and under the Processors tab change “Number of cores per processor:” to 2, click close and Finish
+    The Virtual Machine is ready to be booted
+Installation of ArchLinux
+    Once the VM is booted select “Arch Linux install medium” or let the timer run to 0, both will work
+    Once you let the VM do it’s thing, you will have a terminal in front of you (root@archiso ~ #)
+    First we will have to check if we are connected to some type of network, that can be done with ‘ip addr show’
+    If you are connected to some sort of WiFi you will have to manually connect to a network, if you are connected to Ethernet you should be automatically connected
+    To connect to Wifi
+            For those not on the ethernet you will have to use the command iwctl to start the process
+            Once connected to iwctl type ‘device list’ to identify the device you are going to use
+            Scan for networks with the following command ‘station device name scan’
+            We then have to show a list of available networks to connect to with the command ‘station devicename get-networks’
+            Obtain your SSID from that information and connect to the desired network with the command ‘station devicename connect SSID’ 
+            After that type exit to the command line and use ‘ping google.com’ to see if your connected to the network
+    Once we are connected to WiFi we can start the installation of Arch Linux with the command ‘archinstall’
+    Using your arrow keys, scroll down to ‘Mirrors’ and press enter, select ‘Mirror regions’. Once the list of countries is showing type ‘/United States’ and press enter
+    Each region will be checked, this might take a minute.
+    Once finished, select Back and go down to “Disk configuration”, select ‘Partitioning’ and then select ‘Use a best-effort default partition layout’
+    Select “VMware, VMware Virtual S” (that being the 20 GB we gave the VM earlier)
+    Select ‘ext4’, since filesystem tends to be a good general use filesystem in arch linux, after that select ‘Back’
+    Scroll down and select “Root Password”, enter whatever password you like
+    Select “User Account” and then ‘Add a user’
+    You then should type your name and create a password and make your account a ‘Super user’, after create two more account named ‘justin’ and ‘codi’ with the password ‘GraceHopper1906’ and make them super users as well
+    Select ‘Save and Exit’
+    Select ‘Profile’ then select ‘Type’, and then ‘Desktop’
+    During my installation I chose ‘Gnome’ and will be proceeding so, once you choose a Desktop Environment select ‘Back’ 
+    Scroll down and select “Network configuration”, select ‘Copy ISO…”
+    After that we can start the installation of Arch Linux by selecting ‘Install’
+    Press enter and wait for ArchLinux to install
+    Once installation is done we will only see a terminal, since there is no Desktop Environment setup yet
+    The Setup of The Desktop Environment, Shells, and other resources
+    First we have to make sure that powershell is installed, to make it easier we are just going to install it again. That being done with “pacman -S openssh”, sudo in front if needed
+    After we were required to download another alternative shell, we chose zsh. That command being “pacman -S zsh”
+    After downloading zsh we now have to assign zsh to the users with the command ‘chsh -s /bin/zsh username’
+    After assigning both shells we have to download git and an AUR helper, that being yay. We can download git with ‘pacman -S git’ and then the command ‘git clone https://aur.archlinux.org/yay.git’ (This also may be done in the terminal once the desktop environment is finished downloading if it doesn't transfer, for me I did redo this process)
+    After we finish we can reboot Arch Linux with the command ‘reboot’, if the error “Running in chroot, ignoring request’ if that pops up type ‘Exit’ and then retry
+    After rebooting the login screen for Gnome should pop up
+Inside the Desktop Environment 
+      Once logged into the OS open up the terminal using the search bar after pressing the windows button and typing “terminal”
+      When booting for the first time the terminal will open in bash, not zsh, we can change this by typing “zsh” in the terminal
+      A message will appear after starting zsh saying the the file ~/.zshrc needs to be made, which will be done with the command ‘nano ~/.zshrc’
+      Once the nano file is open we then have the option to create the alias’s for our new shell, in this case I used to following for the ~/.zshrc file, some practical alias’s with one just for fun, that being weather
+      
+      autoload -U colors && colors
+      
+      PROMPT=’%F{cyan}%n@%m %F{green}%1~ %# %f’
+      
+      export PATH=”$PATH:/bin”
+      
+      alias ll='ls -la'               # List all files with details
+      alias l='ls -lh'                # List files with human-readable sizes
+      alias rm='rm -i'                # Prompt before removing files
+      alias cp='cp -i'                # Prompt before overwriting files
+      alias mv='mv -i'                # Prompt before moving files
+      alias ..='cd ..'		# Go up one directory
+      alias ~='cd ~'		# Go to home directory
+      alias update='sudo pacman -Syu'	# Update system for Arch Linux
+      alias ip='ip addr'	# Show IP address configuration
+      alias ping='ping -c 5'		# Ping with 5 packets
+      alias weather='curl wttr.in' 	# Check the weather
+      
+      After creating the ~/.zshrc file we then start downloading a browser which, in the zsh terminal we will download it with the command line ‘yay -S firefox’ to test the browser type ‘firefox google.com’ and see if the pages loaded
+          NOTE: if yay isn’t installed, in the command line type the following ‘cd yay’ and then ‘makepkg -si’ this should start the download for the yay command
+          INSIGHT: during this project I originally was going to use google chrome but none the commands were working even after checking my PATH, spelling and directory so I switched to firefox and got it working instantly 
+          Finally we can install a package from the AUR, for this I downloaded spotify but you can download anything of your liking from https://aur.archlinux.org/packages. This can be done by using the command ‘yay -S spotify’ after the download is finished we can check if it works by typing the command ‘spotify’ which should open the spotify application window
+    
+    
+
+
